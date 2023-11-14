@@ -1,45 +1,30 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import "./signup.scss";
-import useStore from "./store/useStore";
-import { Users } from "./store/types/types";
+import "./login.scss";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import Footer from "./components/footer/Footer";
+import { Users } from "../store/types/types";
 
-const Signup = () => {
-  const [show1, setShow1] = useState(false);
-  const [show2, setShow2] = useState(false);
-  const [show3, setShow3] = useState(false);
+const Login = () => {
   const [userInput, setUserInput] = useState<Users>({
     fullName: "",
     email: "",
     password: "",
   });
-  const { user, register } = useStore();
-
+  const [show2, setShow2] = useState(false);
+  const [show3, setShow3] = useState(false);
+  const router = useRouter();
+  const aa = JSON.parse(localStorage.getItem("user") || "[]");
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserInput({
       ...userInput,
       [e.target.name]: e.target.value,
     });
-    // register([userInput]);
   };
-  useEffect(() => {
-    localStorage.setItem("user", JSON.stringify(user));
-  }, [user]);
-  // let aa = JSON.parse(localStorage.getItem("user") || "[]");
-  // register(aa);
-  const router = useRouter();
+
   const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    register([userInput]);
 
-    if (userInput.fullName === "") {
-      setShow1(true);
-    } else {
-      setShow1(false);
-    }
     if (userInput.email === "") {
       setShow2(true);
     } else {
@@ -50,18 +35,21 @@ const Signup = () => {
     } else {
       setShow3(false);
     }
-    if (
-      show1 === false &&
-      show2 === false &&
-      show3 === false &&
-      userInput.fullName !== ""
-    ) {
+    if (show2 === false && show3 === false && userInput.password !== "") {
       setTimeout(function () {
-        router.push("/login");
+        aa.map((el: Users) => {
+          if (
+            el.email === userInput.email &&
+            el.password === userInput.password
+          ) {
+            router.push("/home");
+          } else {
+            alert("Password or Email is incorrect");
+          }
+        });
       }, 5);
     }
   };
-
   return (
     <div className="signup">
       <div className="container">
@@ -70,23 +58,8 @@ const Signup = () => {
         </div>
         <div className="d10">
           <div className="left">
-            <p className="p1">Sign Up To eatly</p>
+            <p className="p1">Sign In To eatly</p>
             <form>
-              <div className="d2">
-                <input
-                  type="text"
-                  placeholder="Full Name"
-                  id="fullName"
-                  name="fullName"
-                  className="input1"
-                  onChange={handleChange}
-                  required
-                />
-                <img src="/image13.svg" className="img13" alt="" />
-                <span className={show1 === false ? "none" : "show"}>
-                  Please enter your full name
-                </span>
-              </div>
               <div className="d2">
                 <input
                   type="email"
@@ -113,7 +86,7 @@ const Signup = () => {
                 />
                 <img src="/image15.svg" className="img13" alt="" />
                 <span className={show3 === false ? "none" : "show"}>
-                  Please enter password
+                  Please enter your password
                 </span>
               </div>
               <Link href="/login">
@@ -124,8 +97,8 @@ const Signup = () => {
             </form>
             <p className="p2">
               Already Have An Account?{" "}
-              <Link href="/login" className="sp3">
-                Log In
+              <Link href="/" className="sp3">
+                Sign Up
               </Link>
             </p>
           </div>
@@ -148,4 +121,4 @@ const Signup = () => {
   );
 };
 
-export default Signup;
+export default Login;
